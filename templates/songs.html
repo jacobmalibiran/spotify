@@ -1,22 +1,40 @@
 <!DOCTYPE html>
 <html>
-<head><title>Songs in Playlist</title></head>
+<head>
+    <title>Songs in Playlist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='songs.css') }}">
+
+</head>
 <body>
     <h1>Songs in Playlist</h1>
-    <ul>
-    {% for song in songs %}
-        <div>
-            <!--ex: 1. Name - Artist1, Artist2-->
-            {{ loop.index }}. {{ song.track.name }} -
-            {% for artist in song.track.artists %}
-            <!--if not loop last means if it is not the end of the loop - boolean-->
-                {{ artist.name }}{% if not loop.last %}, {% endif %}
+
+    <div class="container">
+        <!-- Left Side: Songs -->
+        <div class="songs-list">
+            <ul>
+            {% for song in songs %}
+                <div>
+                    {{ loop.index }}. {{ song.track.name }} -
+                    {% for artist in song.track.artists %}
+                        {{ artist.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            </ul>
+
+            <p><a href="{{ url_for('index') }}">Back to Login</a></p>
+        </div>
+
+        <!-- Right Side: Analysis -->
+      
+        <h2>Genre Breakdown</h2>
+        <div class="genre-container">
+            {% for genre, score in analysis.items() %}
+                <div class="genre-item">
+                    <span class="genre-name">{{ genre }}</span>
+                    <span>{{ (score * 100) | round(1) }}%</span>
+                </div>
             {% endfor %}
         </div>
-    {% endfor %}
-    </ul>
-    <a href="javascript:window.history.back()">Back to Playlists</a>   
-     <p><a href="{{ url_for('index') }}">Back to Login</a></p>
 </body>
-
 </html>

@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for
 import urllib.parse
 from playlist import auth_url, get_user_token, params, get_playlists_from_user, get_songs_in_playlist
+from groq_api import analyze_songs
 
 app = Flask(__name__)
 
@@ -38,8 +39,14 @@ def playlist_songs(playlist_id):
     if not token:
         return redirect(url_for("index"))
     
+    # dict of songs and other information
     songs = get_songs_in_playlist(token, playlist_id)
-    return render_template("songs.html", songs=songs, token=token)
+
+    # json response of playlist genre breakdown
+    analysis = analyze_songs(songs)
+
+    return render_template("songs.html", songs=songs, token=token, analysis=analysis)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)

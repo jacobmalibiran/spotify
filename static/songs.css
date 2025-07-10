@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    gap: 2rem;
+}
+.songs-list, .analysis-results {
+    width: 50%;
+}
+.genre-container {
+    max-width: 400px;
+    margin: 20px;
+    font-family: Arial, sans-serif;
+}
+.genre-item {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background-color: #f0f0f0;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.genre-name {
+    font-weight: bold;
+    margin-right: 8px;
+}
