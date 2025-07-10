@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Your Spotify Playlists</title>
+    </head>
+    <body>
+        <h1>Your Spotify Playlists</h1>
+        <ul>
+  {% for playlist in playlists %}
+        <div>
+            <!-- url_for calls the app route that contains the function that url_for is listing, playlist.id = playlist["id";
+             this calls the playlist_songs function in playlist.py that passes the individual playlist id and token so that the playlist
+             can be accessed and the tracks can be found]-->
+            <a href="{{ url_for('playlist_songs', playlist_id=playlist.id,) }}?token={{ token|urlencode }}">
+            {{ playlist.name }} ({{ playlist.tracks.total }} tracks)
+            </a>
+        </div>
+  {% endfor %}
+        </ul>
+    </body>
+</html>
