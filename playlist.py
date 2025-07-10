@@ -8,8 +8,6 @@ import urllib.parse
 
 load_dotenv()
 
-app = Flask(__name__)
-
 
 # loads sensitive info, client fields are associated with the app, not specific user account
 client_id = os.getenv("CLIENT_ID")
@@ -76,51 +74,20 @@ def get_playlists_from_user(token):
     return json_result["items"]
 
 def get_songs_in_playlist(token, playlist_id):
-    url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
-    json_result = spotify_get(token, url)
-    # returns a list of items which contain all the songs, can loop through to find each song and associated information
-    return json_result["tracks"]["items"]
+    all_songs = []
+    limit = 100
+    offset = 0
 
+    while True:
+        url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?limit={limit}&offset={offset}"
+        json_result = spotify_get(token, url)
+        items = json_result.get("items", [])
+        all_songs.extend(items)
+        if len(items) < limit:  # No more tracks to fetch
+            break
+        offset += limit
 
-# index route
-@app.route("/")
-def index():
-    # Render HTML with auth URL for user to click
-    # urllib.parse.urlencode coverts dictionary into properly formatted query string
-    spotify_auth_url = auth_url + "?" + urllib.parse.urlencode(params)
-    return render_template("index.html", spotify_auth_url=spotify_auth_url)
-
-# route after login
-@app.route("/callback")
-def callback():
-    code = request.args.get("code")
-    # Error if no code is found
-    if not code:
-        return "Error: No code found in callback URL."
-
-    token = get_user_token(code)
-    
-    playlists = get_playlists_from_user(token)
-
-    # key is id value is spotify playlist id
-    playlist_dict = {idx+1: p["id"] for idx, p in enumerate(playlists)}
-
-    # Just return playlist names and ids for now, or render a template
-    return render_template("playlists.html", playlists=playlists, token=token, playlist_dict=playlist_dict)
-
-# route for specific playlist
-@app.route("/playlists/<playlist_id>")
-def playlist_songs(playlist_id):
-    token = request.args.get("token")
-    # if theres no token or expired goes back to index to login again
-    if not token:
-        return redirect(url_for("index"))
-    
-    songs = get_songs_in_playlist(token, playlist_id)
-    return render_template("songs.html", songs=songs, token=token)
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    return all_songs
 
 
 def main():
@@ -157,4 +124,3 @@ def main():
         print("Please enter a valid number.")
 
 
-main()
