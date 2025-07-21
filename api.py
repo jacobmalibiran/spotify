@@ -1,11 +1,14 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, session
 import urllib.parse
 from playlist import auth_url, get_user_token, params, get_playlists_from_user, get_songs_in_playlist
 from groq_api import analyze_songs
+import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 # index route
+# these routes are for my own server, NOT the spotify api urls
 @app.route("/")
 def index():
     # Render HTML with auth URL for user to click
@@ -43,6 +46,7 @@ def playlist_songs(playlist_id):
     songs = get_songs_in_playlist(token, playlist_id)
 
     # json response of playlist genre breakdown
+    # pared_json variable in groq_api
     analysis = analyze_songs(songs)
 
     return render_template("songs.html", songs=songs, token=token, analysis=analysis)

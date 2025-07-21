@@ -44,7 +44,12 @@ def analyze_songs(songs):
     response_data = response.json()
     model_output = response_data["choices"][0]["message"]["content"]
     parsed_json = json.loads(model_output)
-
+    #entire
+    #print(parsed_json)
+    #theme
+    #print(parsed_json["theme"])
+    #genres
+    #print(parsed_json["genre_confidence"])
 
     response.raise_for_status()
     return parsed_json

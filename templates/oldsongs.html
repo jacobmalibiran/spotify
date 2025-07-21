@@ -26,20 +26,15 @@
         </div>
 
         <!-- Right Side: Analysis -->
-            <div class="genre-container">
-                <h2>Theme</h2>
-                <!-- only .theme because it is getting the value from theme-->
-                <span class="genre-name">{{ analysis.theme }}</span>
-
-                <h2>Genre Breakdown</h2>
-                <!-- .items because the dict at genre_confidence has a value that contains a dict-->
-              {% for genre, score in analysis.genre_confidence.items() %}
+      
+        <h2>Genre Breakdown</h2>
+        <div class="genre-container">
+            {% for genre, score in analysis.genre_confidence.items() %}
                 <div class="genre-item">
-                  <span class="genre-name">{{ genre }}</span>:
-                  <span>{{ (score * 100) | round(1) }}%</span>
+                    <span class="genre-name">{{ genre }}</span>
+                    <span>{{ (score * 100) | round(1) }}%</span>
                 </div>
-              {% endfor %}
-
-            </div>          
+            {% endfor %}
+        </div>
 </body>
 </html>
