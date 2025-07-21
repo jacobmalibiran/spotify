@@ -18,9 +18,9 @@ body {
   
   ul {
     list-style: none;
-    padding-left: 100px;
+    padding: 0px;
     max-width: 600px;
-    margin: 0;
+    margin: 0 auto;
   }
   
   ul div {
@@ -47,5 +47,22 @@ body {
     text-decoration: underline;
     color: #fff;
     cursor: pointer;
+  }
+  
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .saved-playlists {
+    text-align: right;
+    color: #ccc;
+  }
+  
+  .saved-playlists .label {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
   }
   

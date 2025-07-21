@@ -89,6 +89,15 @@ def get_songs_in_playlist(token, playlist_id):
 
     return all_songs
 
+import requests
+
+def get_playlist_title(token, playlist_id):
+
+    url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
+    json_result = spotify_get(token, url)
+    return json_result["name"]
+
+
 
 def main():
     # for terminal testings

@@ -7,6 +7,16 @@
     </head>
     <body>
         <h1>Your Spotify Playlists</h1>
+
+        <div class="saved-playlists">
+            <div class="label">
+                <strong>Main:</strong> {{ main.name if main else "None Saved" }}
+            </div>
+            <div class="label">
+                <strong>Secondary:</strong> {{ secondary.name if secondary else "None Saved" }}
+            </div>
+        </div>
+
         <ul>
   {% for playlist in playlists %}
         <div>

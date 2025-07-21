@@ -43,6 +43,7 @@ def analyze_songs(songs):
     response = requests.post(url, json=payload, headers=headers)
     response_data = response.json()
     model_output = response_data["choices"][0]["message"]["content"]
+    print(model_output)
     parsed_json = json.loads(model_output)
     #entire
     #print(parsed_json)

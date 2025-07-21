@@ -6,7 +6,7 @@
 
 </head>
 <body>
-    <h1>Songs in Playlist</h1>
+    <h1>Songs in {{ playlist_name }}</h1>
 
     <div class="container">
         <!-- Left Side: Songs -->
@@ -22,11 +22,24 @@
             {% endfor %}
             </ul>
 
+            <p><a href="{{ url_for('playlists') }}">Back to Playlist</a></p>
             <p><a href="{{ url_for('index') }}">Back to Login</a></p>
         </div>
 
         <!-- Right Side: Analysis -->
             <div class="genre-container">
+                <form action="{{ url_for('save_main') }}" method="post" style="display:inline-block; margin-right: 10px;">
+                    <input type="hidden" name="analysis" value='{{ analysis | tojson | safe }}'>
+                    <input type="hidden" name="playlist_name" value="{{ playlist_name }}">
+                    <button type="submit">Save as Main Playlist</button>
+                </form>
+            
+                <form action="{{ url_for('save_secondary') }}" method="post" style="display:inline-block;">
+                    <input type="hidden" name="analysis" value='{{ analysis | tojson | safe }}'>
+                    <input type="hidden" name="playlist_name" value="{{ playlist_name }}">
+                    <button type="submit">Save as Secondary Playlist</button>
+                </form>
+
                 <h2>Theme</h2>
                 <!-- only .theme because it is getting the value from theme-->
                 <span class="genre-name">{{ analysis.theme }}</span>
