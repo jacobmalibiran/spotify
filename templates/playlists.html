@@ -10,11 +10,13 @@
 
         <div class="saved-playlists">
             <div class="label">
-                <strong>Main:</strong> {{ main.name if main else "None Saved" }}
+                <strong>Main Playlist:</strong> {{ main_playlist.name if main_playlist else "None Saved" }}
             </div>
             <div class="label">
-                <strong>Secondary:</strong> {{ secondary.name if secondary else "None Saved" }}
+                <strong>Secondary Playlist:</strong> {{ secondary_playlist.name if secondary_playlist else "None Saved" }}
             </div>
+            <!-- not done, creating compare_playlists-->
+            <a href="{{ url_for('compare_playlists') }}">Compare Playlists</a>
         </div>
 
         <ul>

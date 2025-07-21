@@ -31,12 +31,14 @@
                 <form action="{{ url_for('save_main') }}" method="post" style="display:inline-block; margin-right: 10px;">
                     <input type="hidden" name="analysis" value='{{ analysis | tojson | safe }}'>
                     <input type="hidden" name="playlist_name" value="{{ playlist_name }}">
+                    <input type="hidden" name="playlist_id" value="{{ playlist_id }}">
                     <button type="submit">Save as Main Playlist</button>
                 </form>
             
                 <form action="{{ url_for('save_secondary') }}" method="post" style="display:inline-block;">
                     <input type="hidden" name="analysis" value='{{ analysis | tojson | safe }}'>
                     <input type="hidden" name="playlist_name" value="{{ playlist_name }}">
+                    <input type="hidden" name="playlist_id" value="{{ playlist_id }}">
                     <button type="submit">Save as Secondary Playlist</button>
                 </form>
 

@@ -8,8 +8,8 @@ import json
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-main = None
-secondary = None
+main_playlist = None
+secondary_playlist = None
 
 # index route
 # these routes are for my own server, NOT the spotify api urls
@@ -53,7 +53,11 @@ def playlists():
     # key is id value is spotify playlist id
     playlist_dict = {idx+1: p["id"] for idx, p in enumerate(playlists)}
 
-    return render_template("playlists.html", playlists=playlists, token=token, playlist_dict=playlist_dict)
+    global main_playlist
+    print(main_playlist)
+    global secondary_playlist
+
+    return render_template("playlists.html", playlists=playlists, token=token, playlist_dict=playlist_dict, main_playlist=main_playlist, secondary_playlist=secondary_playlist)
 
 # route for specific playlist
 @app.route("/playlists/<playlist_id>")
@@ -73,32 +77,42 @@ def playlist_songs(playlist_id):
     # pared_json variable in groq_api
     analysis = analyze_songs(songs)
 
-    return render_template("songs.html", songs=songs, token=token, analysis=analysis, playlist_name = playlist_name)
+    return render_template("songs.html", songs=songs, token=token, analysis=analysis, playlist_name=playlist_name, playlist_id=playlist_id)
 
 
 @app.route("/save_main", methods=["POST"])
 def save_main():
-    global saved_main
+    global main_playlist
     playlist_name = request.form.get("playlist_name")
     analysis = request.form.get("analysis")
+    playlist_id = request.form.get("playlist_id")
     if analysis and playlist_name:
-        saved_main = {
+        main_playlist = {
             "name": playlist_name,
+            "playlist_id": playlist_id,
             "analysis": json.loads(analysis)
         }
-    return redirect(request.referrer or url_for("index"))
+    return redirect(url_for("playlists"))
 
 @app.route("/save_secondary", methods=["POST"])
 def save_secondary():
-    global saved_secondary
+    global secondary_playlist
     playlist_name = request.form.get("playlist_name")
     analysis = request.form.get("analysis")
+    playlist_id = request.form.get("playlist_id")
     if analysis and playlist_name:
-        saved_secondary = {
+        secondary_playlist = {
             "name": playlist_name,
+            "playlist_id": playlist_id,
             "analysis": json.loads(analysis)
         }
-    return redirect(request.referrer or url_for("index"))
+    return redirect(url_for("playlists"))
+
+@app.route("/compare_playlists")
+def compare_playlists():
+    global main_playlist, secondary_playlist
+    return render_template('compare.html', main_playlist=main_playlist, secondary_playlist=secondary_playlist)
+
     
 
 if __name__ == "__main__":
