@@ -2,14 +2,13 @@ from flask import Flask, request, render_template, redirect, url_for, session
 import urllib.parse
 from playlist import auth_url, get_user_token, params, get_playlists_from_user, get_songs_in_playlist, get_playlist_title
 from groq_api import analyze_songs
+import shared
 import os
 import json
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-main_playlist = None
-secondary_playlist = None
 
 # index route
 # these routes are for my own server, NOT the spotify api urls
@@ -53,11 +52,7 @@ def playlists():
     # key is id value is spotify playlist id
     playlist_dict = {idx+1: p["id"] for idx, p in enumerate(playlists)}
 
-    global main_playlist
-    print(main_playlist)
-    global secondary_playlist
-
-    return render_template("playlists.html", playlists=playlists, token=token, playlist_dict=playlist_dict, main_playlist=main_playlist, secondary_playlist=secondary_playlist)
+    return render_template("playlists.html", playlists=playlists, token=token, playlist_dict=playlist_dict, main_playlist=shared.main_playlist, secondary_playlist=shared.secondary_playlist)
 
 # route for specific playlist
 @app.route("/playlists/<playlist_id>")
@@ -75,19 +70,18 @@ def playlist_songs(playlist_id):
 
     # json response of playlist genre breakdown
     # pared_json variable in groq_api
-    analysis = analyze_songs(songs)
+    analysis = analyze_songs(songs, "V1")
 
     return render_template("songs.html", songs=songs, token=token, analysis=analysis, playlist_name=playlist_name, playlist_id=playlist_id)
 
 
 @app.route("/save_main", methods=["POST"])
 def save_main():
-    global main_playlist
     playlist_name = request.form.get("playlist_name")
     analysis = request.form.get("analysis")
     playlist_id = request.form.get("playlist_id")
     if analysis and playlist_name:
-        main_playlist = {
+        shared.main_playlist = {
             "name": playlist_name,
             "playlist_id": playlist_id,
             "analysis": json.loads(analysis)
@@ -96,12 +90,11 @@ def save_main():
 
 @app.route("/save_secondary", methods=["POST"])
 def save_secondary():
-    global secondary_playlist
     playlist_name = request.form.get("playlist_name")
     analysis = request.form.get("analysis")
     playlist_id = request.form.get("playlist_id")
     if analysis and playlist_name:
-        secondary_playlist = {
+        shared.secondary_playlist = {
             "name": playlist_name,
             "playlist_id": playlist_id,
             "analysis": json.loads(analysis)
@@ -110,8 +103,10 @@ def save_secondary():
 
 @app.route("/compare_playlists")
 def compare_playlists():
-    global main_playlist, secondary_playlist
-    return render_template('compare.html', main_playlist=main_playlist, secondary_playlist=secondary_playlist)
+    songs = get_songs_in_playlist(session.get('token'), shared.secondary_playlist['playlist_id'])
+    analysis = analyze_songs(songs, "V2")
+    print(analysis)
+    return render_template('compare.html', main_playlist=shared.main_playlist, secondary_playlist=shared.secondary_playlist, analysis=analysis)
 
     
 

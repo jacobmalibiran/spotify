@@ -3,12 +3,14 @@ from dotenv import load_dotenv
 import os
 import json
 from prompts import PROMPTS
+import shared
 
 load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
 
-def analyze_songs(songs):
+def analyze_songs(songs, version):
+    import api
     # endpoint
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
@@ -17,7 +19,6 @@ def analyze_songs(songs):
     }
 
     # formats the dict as a string with song name and artists
-    
     song_string = "\n".join([
         f"{i+1}. \"{song['track']['name']}\" by {([artist["name"] for artist in song["track"]["artists"]])}"
         for i, song in enumerate(songs)
@@ -25,7 +26,10 @@ def analyze_songs(songs):
 
 
     # full prompt with song list to send to ai
-    full_prompt = PROMPTS["V1"].replace("{PROMPT}", song_string)
+    if version == "V1":
+        full_prompt = PROMPTS[version].replace("{PROMPT}", song_string)
+    elif version == "V2":
+        full_prompt = PROMPTS[version].replace("{THEME}", shared.main_playlist['analysis']['theme']).replace("{PROMPT}", song_string)
 
     payload = {
         "model": "llama3-70b-8192",  # Or llama3, etc.
@@ -43,7 +47,6 @@ def analyze_songs(songs):
     response = requests.post(url, json=payload, headers=headers)
     response_data = response.json()
     model_output = response_data["choices"][0]["message"]["content"]
-    print(model_output)
     parsed_json = json.loads(model_output)
     #entire
     #print(parsed_json)

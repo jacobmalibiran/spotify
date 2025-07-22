@@ -1,0 +1,19 @@
+.playlist-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    padding: 20px;
+}
+
+.playlist {
+    width: 48%;
+}
+
+.genre-item {
+    margin-bottom: 5px;
+}
+
+h1 {
+    text-align: center;
+}

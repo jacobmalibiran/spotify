@@ -1,57 +1,69 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Comparing Playlists</title>
-    </head>
-    <body>
-        <h1>Comparing {{ main_playlist.name }} to {{ secondary_playlist.name }}</h1>
+<head>
+    <title>Comparing Playlists</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='compare.css') }}">
 
-        <div class="main_playlist">
+</head>
+<body>
+    <h1>Comparing {{ main_playlist.name }} to {{ secondary_playlist.name }}</h1>
+
+    <div class="playlist-container">
+        <!-- Main Playlist (Left) -->
+        <div class="playlist main_playlist">
             <div class="characteristics">
                 <h3>Theme:</h3>
                 <p>{{ main_playlist.analysis.theme }}</p>
+
                 <h3>Genres:</h3>
                 {% for genre, score in main_playlist.analysis.genre_confidence.items() %}
-                <div class="genre-item">
-                  <span class="genre-name">{{ genre }}</span>:
-                  <span>{{ (score * 100) | round(1) }}%</span>
-                </div>
-               {% endfor %}
+                    <div class="genre-item">
+                        <span class="genre-name">{{ genre }}</span>:
+                        <span>{{ (score * 100) | round(1) }}%</span>
+                    </div>
+                {% endfor %}
             </div>
+
             <div class="list">
                 <h3>Tracks:</h3>
                 {% for song in main_playlist.analysis.songs %}
-                <div>
-                    {{ loop.index }}. {{ song.title }} - {{ song.artist }}
-                </div>
+                    <div>
+                        {{ loop.index }}. {{ song.title }} - {{ song.artist }}
+                    </div>
                 {% endfor %}
             </div>
         </div>
-        <div class="secondary_playlist">
+
+        <!-- Secondary Playlist (Right) -->
+        <div class="playlist secondary_playlist">
             <div class="characteristics">
                 <h3>Theme:</h3>
                 <p>{{ secondary_playlist.analysis.theme }}</p>
+
                 <h3>Genres:</h3>
                 {% for genre, score in secondary_playlist.analysis.genre_confidence.items() %}
-                <div class="genre-item">
-                  <span class="genre-name">{{ genre }}</span>:
-                  <span>{{ (score * 100) | round(1) }}%</span>
-                </div>
+                    <div class="genre-item">
+                        <span class="genre-name">{{ genre }}</span>:
+                        <span>{{ (score * 100) | round(1) }}%</span>
+                    </div>
                 {% endfor %}
             </div>
+
             <div class="list">
                 <h3>Tracks:</h3>
                 {% for song in secondary_playlist.analysis.songs %}
-                <div>
-                    {{ loop.index }}. {{ song.title }} - {{ song.artist }}
-                </div>
+                    <div>
+                        {{ loop.index }}. {{ song.title }} - {{ song.artist }}
+                    </div>
                 {% endfor %}
             </div>
         </div>
-        <div class="similar_songs">
-            <div class="list">
-                
-            </div>
+    </div>
+
+    <div class="similar_songs">
+        <div class="list">
+            <!-- Similar songs will go here -->
         </div>
-    </body>
+    </div>
+</body>
 </html>
