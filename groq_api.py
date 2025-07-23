@@ -26,8 +26,10 @@ def analyze_songs(songs, version):
 
 
     # full prompt with song list to send to ai
+    # V1 is to analysi genre confidence for the entire playlist and for each individual song
     if version == "V1":
         full_prompt = PROMPTS[version].replace("{PROMPT}", song_string)
+    # V2 is to analyze the theme confidence for each individual song in the secondary playlist
     elif version == "V2":
         full_prompt = PROMPTS[version].replace("{THEME}", shared.main_playlist['analysis']['theme']).replace("{PROMPT}", song_string)
 

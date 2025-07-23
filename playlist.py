@@ -5,6 +5,8 @@ import base64
 import json
 from requests import post, get
 import urllib.parse
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 load_dotenv()
 
@@ -66,13 +68,14 @@ def get_user_token(code):
 def get_auth_header(token):
     return {"Authorization" : "Bearer " + token}
 
-
+# gets all playlists from user
 def get_playlists_from_user(token):
     url = f"https://api.spotify.com/v1/me/playlists"
     json_result = spotify_get(token, url)
     # returns a list of items which contains all the playlists a user has, can loop through to find playlist name and playlist id
     return json_result["items"]
 
+# returns a list of all the songs in a playlist
 def get_songs_in_playlist(token, playlist_id):
     all_songs = []
     limit = 100
@@ -89,13 +92,19 @@ def get_songs_in_playlist(token, playlist_id):
 
     return all_songs
 
-import requests
-
+# returns the title of a playlist
 def get_playlist_title(token, playlist_id):
-
     url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
     json_result = spotify_get(token, url)
     return json_result["name"]
+
+# calculates the similarity score for song genre to main playlist genre
+def genre_similarity_to_playlist(song_genre_confidence, playlist_genre_confidence):
+    genres = list(playlist_genre_confidence.keys())
+    song_vec = np.array([song_genre_confidence.get(g, 0) for g in genres]).reshape(1, -1)
+    playlist_vec = np.array([playlist_genre_confidence.get(g, 0) for g in genres]).reshape(1, -1)
+    return float(cosine_similarity(song_vec, playlist_vec)[0][0])
+
 
 
 
