@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 import urllib.parse
-from playlist import auth_url, get_user_token, params, get_playlists_from_user, get_songs_in_playlist, get_playlist_title, genre_similarity_to_playlist
+from playlist import auth_url, get_user_token, params, get_playlists_from_user, get_songs_in_playlist, get_playlist_title, genre_similarity_to_playlist, get_username, add_songs_to_playlist
 from groq_api import analyze_songs
 import shared
 import os
@@ -48,12 +48,13 @@ def playlists():
     
     token = session.get("token")
 
+    username = get_username(token)
     playlists = get_playlists_from_user(token)
 
     # key is id value is spotify playlist id
     playlist_dict = {idx+1: p["id"] for idx, p in enumerate(playlists)}
 
-    return render_template("playlists.html", playlists=playlists, token=token, playlist_dict=playlist_dict, main_playlist=shared.main_playlist, secondary_playlist=shared.secondary_playlist)
+    return render_template("playlists.html", username=username, playlists=playlists, token=token, playlist_dict=playlist_dict, main_playlist=shared.main_playlist, secondary_playlist=shared.secondary_playlist)
 
 # route for specific playlist
 @app.route("/playlists/<playlist_id>")
@@ -72,6 +73,8 @@ def playlist_songs(playlist_id):
     # json response of playlist genre breakdown
     # pared_json variable in groq_api
     analysis = analyze_songs(songs, "V1")
+    print("ANALYSIS VARIABLE: ")
+    print(analysis)
 
     return render_template("songs.html", songs=songs, token=token, analysis=analysis, playlist_name=playlist_name, playlist_id=playlist_id)
 
@@ -95,6 +98,7 @@ def save_secondary():
     playlist_name = request.form.get("playlist_name")
     analysis = request.form.get("analysis")
     playlist_id = request.form.get("playlist_id")
+    song_data = request.form.get("song_data")
     if analysis and playlist_name:
         shared.secondary_playlist = {
             "name": playlist_name,
@@ -109,21 +113,31 @@ def compare_playlists():
     songs = get_songs_in_playlist(session.get('token'), shared.secondary_playlist['playlist_id'])
     analysis = analyze_songs(songs, "V2")
 
+    for song in shared.secondary_playlist['analysis']['songs']:
+        for match in songs:
+            if song['title'] == match['track']['name']:
+                song['song_id'] = match['track']['id']
+
+
     # goes through all songs in secondary playlist and finds fit score
     # finds genre similarity and theme similarity to calculate fit score, weighted 60% for theme and 40% for genre
     for song in shared.secondary_playlist['analysis']['songs']:
         song['genre_similarity'] = genre_similarity_to_playlist(song['genre_confidence'], shared.main_playlist['analysis']['genre_confidence'])
         for match in analysis['songs']:
-                if song['title'] == match['title'] and song['artist'] == match['artist']:
+                if song['title'].strip().lower() == match['title'].strip().lower() and song['artist'].strip().lower() == match['artist'].strip().lower():
                     song['theme_similarity'] = match['theme_fit_confidence']
                     break
-        fit_score = round(0.4 * song['genre_similarity'] + 0.6 * song['theme_similarity'], 2)
+        fit_score = round(0.5 * song['genre_similarity'] + 0.5 * song['theme_similarity'], 2)
         song['fit_score'] = 100 * fit_score
-
-        print(song)
-
-
     return render_template('compare.html', main_playlist=shared.main_playlist, secondary_playlist=shared.secondary_playlist, analysis=analysis)
+
+@app.route("/add_songs_to_playlist", methods=["POST"])
+def add_songs_to_main_playlist():
+    token = session.get('token')
+    playlist_id = shared.main_playlist['playlist_id']
+    selected_songs = request.form.getlist('selected_songs')
+    add_songs_to_playlist(token, playlist_id, selected_songs)
+    return redirect(url_for('playlists'))
 
     
 

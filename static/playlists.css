@@ -66,3 +66,42 @@ body {
     font-size: 0.95rem;
   }
   
+  .saved-playlists {
+    background-color: #1e1e1e;
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.saved-playlists h2 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: #1DB954;
+}
+
+.playlist-box p {
+    font-size: 1rem;
+    margin: 8px 0;
+}
+
+.compare-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #1DB954;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.compare-btn:hover {
+    background-color: #14833b;
+}

@@ -4,6 +4,8 @@ import os
 import json
 from prompts import PROMPTS
 import shared
+import re
+import orjson
 
 load_dotenv()
 
@@ -36,26 +38,31 @@ def analyze_songs(songs, version):
     payload = {
         "model": "llama3-70b-8192",  # Or llama3, etc.
         "messages": [
-            {"role": "user", "content": full_prompt}
+            {"role": "user", "content": full_prompt},
+            {"role": "system", "content": "You are a helpful assistant. Return your response strictly as valid JSON only. Do not include any explanations or prose."}
         ],
         # temperature handles consistency and randomness, lower temp is consistent and less random - precise
         # higher temp is less consistent and more random - good for creative wriitng or brainstorming
-        "temperature": 0.3
+        "temperature": 0.1
     }
 
     
 
 
     response = requests.post(url, json=payload, headers=headers)
-    response_data = response.json()
-    model_output = response_data["choices"][0]["message"]["content"]
-    parsed_json = json.loads(model_output)
-    #entire
-    #print(parsed_json)
-    #theme
-    #print(parsed_json["theme"])
-    #genres
-    #print(parsed_json["genre_confidence"])
-
     response.raise_for_status()
-    return parsed_json
+    #print("RESPONSE: ")
+    #print(response)
+
+    try:
+        response_data = response.json()
+        model_output = response_data["choices"][0]["message"]["content"]
+
+        print("MODEL OUTPUT:\n", model_output)
+        parsed_json = orjson.loads(model_output)
+        print("PARSED JSON:\n", parsed_json)
+        return parsed_json
+    except (KeyError, json.JSONDecodeError) as e:
+        print("Error parsing model output:", e)
+        print("Raw response:", response.text)
+        return None

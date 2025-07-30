@@ -38,14 +38,24 @@
 
         <!-- Secondary Playlist (Right) -->
         <div class="playlist secondary_playlist">
-
             <div class="list">
-                <h3>Tracks & Similarity Score:</h3>
-                {% for song in secondary_playlist.analysis.songs %}
-                    <div>
-                        {{ loop.index }}. {{ song.title }} - {{ song.artist }}: {{ song.fit_score }}
-                    </div>
-                {% endfor %}
+                <h3>Secondary Playlist Tracks & Fit Scores:</h3>
+                <form action="{{ url_for('add_songs_to_main_playlist') }}" method="POST">
+                    <ul class="similar_songs">
+                    {% for song in secondary_playlist.analysis.songs %}
+                        <li>
+                            <label>
+                                <div>
+                                <input type="checkbox" name="selected_songs" value="{{ song.song_id }}">
+                                    <strong>{{ song.title }} - {{ song.artist }}</strong><br>
+                                    <span style="margin-left: 20px;">Fit Score: {{ song.fit_score }}%</span>
+                                </div>
+                            </label>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                    <button type="submit">Add Selected Songs to Main Playlist</button>
+                </form>
             </div>
 
             <div class="characteristics">

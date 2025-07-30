@@ -16,7 +16,7 @@ Folk
 Reggae  
 Other  
 
-2. A high-level theme or mood of the playlist, based on the song titles and artists (e.g., "party", "melancholy", "road trip", "romantic", "hype", "chill", etc.).
+2. A high-level theme or mood of the playlist, the theme should derive from, but in some cases not all of the: mood or emotion, genre or subgenre, activity or situation, time period or era, storyline or narrative, specific instrument or vocal style.
 
 3. For each individual song, provide confidence scores for the same music genres listed above.
 
@@ -51,7 +51,7 @@ The response should be in JSON format with the following structure:
   ]
 }
 
-Ensure consistency in formatting. Avoid explanations and ONLY return the JSON object. For the genre confidence, order with the most prominent genre on the top, to the least prominent genres on the bottom.
+Ensure consistency in formatting. ONLY return the JSON object, no other text or explanations. For the genre confidence, order with the most prominent genre on the top, to the least prominent genres on the bottom.
 
 List of songs: "{PROMPT}"
 """,
@@ -82,7 +82,7 @@ The response should be in JSON format with the following structure:
   ]
 }
 
-Do not include genre confidence or any explanations. ONLY return the JSON object.
+Do not include genre confidence or any explanations. ONLY return the JSON object, no other text or explanations
 
 List of songs: "{PROMPT}"
 """

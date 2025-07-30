@@ -7,6 +7,7 @@ from requests import post, get
 import urllib.parse
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import requests
 
 load_dotenv()
 
@@ -18,7 +19,7 @@ client_secret = os.getenv("CLIENT_SECRET")
 redirect_uri = os.getenv("REDIRECT_URI")
 
 
-scopes = "playlist-read-private"
+scopes = "playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private"
 # where users will login to get their user info
 auth_url = "https://accounts.spotify.com/authorize"
 
@@ -68,6 +69,12 @@ def get_user_token(code):
 def get_auth_header(token):
     return {"Authorization" : "Bearer " + token}
 
+# returns spotify user's username
+def get_username(token):
+    url = f"https://api.spotify.com/v1/me/"
+    json_result = spotify_get(token, url)
+    return json_result["display_name"]
+
 # gets all playlists from user
 def get_playlists_from_user(token):
     url = f"https://api.spotify.com/v1/me/playlists"
@@ -89,7 +96,6 @@ def get_songs_in_playlist(token, playlist_id):
         if len(items) < limit:  # No more tracks to fetch
             break
         offset += limit
-
     return all_songs
 
 # returns the title of a playlist
@@ -105,40 +111,33 @@ def genre_similarity_to_playlist(song_genre_confidence, playlist_genre_confidenc
     playlist_vec = np.array([playlist_genre_confidence.get(g, 0) for g in genres]).reshape(1, -1)
     return float(cosine_similarity(song_vec, playlist_vec)[0][0])
 
+def add_songs_to_playlist(token, playlist_id, selected_songs):
+    url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+
+    headers= {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+     
+    uris = [f"spotify:track:{song_id}" for song_id in selected_songs]
+
+    payload = {
+        "uris": uris
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload
+    )
+    if response.status_code != 201:
+        print("Failed to add songs:", response.json())
+    else:
+        return "Success!"
 
 
 
-def main():
-    # for terminal testings
-    print("Go to the following URL:")
-    print(auth_url + "?" + urllib.parse.urlencode(params))
-    code = input("Enter ?code: " )
-    #this token is different from spotify.py token b/c it has code auth from user to get private information
-    token = get_user_token(code)
-    playlists = get_playlists_from_user(token)
 
-    playlist_dict = {}
-    # playlists has all the playlists, looping through this will give playlist, which will have an individual playlist at each index
-    for idx, playlist in enumerate(playlists, start=1):
-        print(f"{idx}. {playlist["name"]}")
-        # maps the indiviudal playlist index to the spotify playlist id which is used to find all tracks inside playlist
-        playlist_dict[idx] = playlist["id"]
 
-    try:
-        choice = int(input("Select an album number to view songs: "))
-        # user chooses an index, in value in dictionary at index is playlist id
-        playlist_id = playlist_dict.get(choice)
-        if playlist_id:
-            # calls function to get list of songs inside a playlist, can loop through to get each indiviudal song and associated information
-            songs = get_songs_in_playlist(token, playlist_id)
-            print("Songs in the selected album:")
-            for idx, song in enumerate(songs, start=1):
-                artist_names = ", ".join([artist["name"] for artist in song["track"]["artists"]])
-                print(f"{idx}. {song["track"]["name"]} - {artist_names}")
-        else:
-            print("Invalid selection")
-
-    except ValueError:
-        print("Please enter a valid number.")
 
 

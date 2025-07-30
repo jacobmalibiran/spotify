@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Spotify Login</title>
-    </head>
-    
-    <body>
+<head>
+    <meta charset="UTF-8" />
+    <title>Spotify Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+
+<body>
+    <div class="login-container">
         <h1>Login with Spotify</h1>
-        <a href="{{ spotify_auth_url }}">Click here to authorize Spotify access</a>
-    </body>
+        <a class="login-button" href="{{ spotify_auth_url }}">Authorize Spotify</a>
+    </div>
+</body>
 </html>

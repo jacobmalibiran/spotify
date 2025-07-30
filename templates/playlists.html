@@ -6,18 +6,17 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='playlists.css') }}">
     </head>
     <body>
-        <h1>Your Spotify Playlists</h1>
+        <h1>{{ username }}'s Spotify Playlists</h1>
 
         <div class="saved-playlists">
-            <div class="label">
-                <strong>Main Playlist:</strong> {{ main_playlist.name if main_playlist else "None Saved" }}
+            <h2>Current Playlists</h2>
+            <div class="playlist-box">
+                <p><strong>Add songs to:</strong> {{ main_playlist.name if main_playlist else "None Saved" }}</p>
+                <p><strong>Add songs from:</strong> {{ secondary_playlist.name if secondary_playlist else "None Saved" }}</p>
             </div>
-            <div class="label">
-                <strong>Secondary Playlist:</strong> {{ secondary_playlist.name if secondary_playlist else "None Saved" }}
-            </div>
-            <!-- not done, creating compare_playlists-->
-            <a href="{{ url_for('compare_playlists') }}">Compare Playlists</a>
+            <a class="compare-btn" href="{{ url_for('compare_playlists') }}">Compare Playlists</a>
         </div>
+        
 
         <ul>
   {% for playlist in playlists %}
