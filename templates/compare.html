@@ -7,8 +7,9 @@
 </head>
 <body>
     <h1>Comparing {{ main_playlist.name }} to {{ secondary_playlist.name }}</h1>
-    <p><a href="{{ url_for('playlists') }}">Back to Playlist</a></p>
-
+    <div class="back-container">
+        <a class="back" href="{{ url_for('playlists') }}">Back to Playlists</a>
+    </div>
     <div class="playlist-container">
         <!-- Main Playlist (Left) -->
         <div class="playlist main_playlist">
@@ -54,7 +55,7 @@
                         </li>
                     {% endfor %}
                     </ul>
-                    <button type="submit">Add Selected Songs to Main Playlist</button>
+                    <button type="submit" class="back">Add Selected Songs to Main Playlist</button>
                 </form>
             </div>
 

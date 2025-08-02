@@ -16,7 +16,21 @@ Folk
 Reggae  
 Other  
 
-2. A high-level theme or mood of the playlist, the theme should derive from, but in some cases not all of the: mood or emotion, genre or subgenre, activity or situation, time period or era, storyline or narrative, specific instrument or vocal style.
+2. Generate a high-level theme that accurately captures the unique vibe of the playlist. Consider multiple factors, including:
+
+Mood or emotion (e.g., melancholic, euphoric, aggressive)
+
+Genre or subgenre (e.g., UK garage, dream pop, phonk, funk carioca)
+
+Listening context (e.g., late-night drive, gym session, studying)
+
+Era or time period (e.g., early 2000s, 90s nostalgia)
+
+Storyline or narrative arc, if applicable
+
+Signature sound characteristics (e.g., distorted bass, ambient pads, chopped vocals)
+
+Be specific and culturally informed. Use concise, vivid language that paints a mental picture of the setting and sound. Avoid generic or overused descriptions like “chill vibes” or “R&B fusion” unless they are truly fitting. Identify underground or global music influences when relevant. The theme should feel authentic and contextually meaningful to the songs in the playlist.
 
 3. For each individual song, provide confidence scores for the same music genres listed above.
 
