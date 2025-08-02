@@ -1,17 +1,116 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212;
+    color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #1DB954; /* Spotify green */
+    text-shadow: 0 0 10px #1DB954aa;
+}
+
+.buttons {
+    background-color: #1e1e1e;
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1DB954;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #14833b;
+}
+
+.back {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 300px; /* slightly smaller than buttons box */
+    margin: 0 auto 30px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back a {
+    font-size: 0.7rem; /* slightly smaller text */
+    padding: 6px 12px; /* smaller buttons */
+    background-color: #1DB954;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.back a:hover {
+    background-color: #14833b;
+}
+
+
+.list-container {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;  /* Align left/right */
+    align-items: flex-start;
+    gap: 2rem; /* consistent spacing between columns */
+    margin: 0 auto 30px auto;
+    max-width: 1000px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.genre-container,
+.songs-list {
+    width: 100%;  /* Even spacing */
+}
+.songs-list ul {
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+}
+.songs-list > div {
+    margin-bottom: 0.5em;
+}
+
+.genre-item {
+    margin-bottom: 0.3em;
+}
+
+.genre-name {
+    font-weight: bold;
+    margin-left: 0.5em;
+}
+
 .container {
     display: flex;
     gap: 2rem;
 }
-.songs-list, .analysis-results {
-    width: 50%;
-}
-.genre-container {
-    margin: 1em 0;
-}
-.genre-item {
-    margin-bottom: 0.3em;
-}
-.genre-name {
-    font-weight: bold;
-    margin-right: 0.5em;
+
+.songs-list a:hover {
+    text-decoration: underline;
 }
