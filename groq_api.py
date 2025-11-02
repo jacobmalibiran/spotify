@@ -10,59 +10,89 @@ import orjson
 load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
+if not API_KEY:
+    raise RuntimeError("Missing Groq API key. Set API_KEY in the environment.")
+
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 def analyze_songs(songs, version):
-    import api
-    # endpoint
+    import api  # noqa: F401  # ensure Flask app is loaded before making external call
+
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
         "Authorization": "Bearer " + API_KEY,
         "Content-Type": "application/json"
     }
 
-    # formats the dict as a string with song name and artists
-    song_string = "\n".join([
-        f"{i+1}. \"{song['track']['name']}\" by {([artist["name"] for artist in song["track"]["artists"]])}"
-        for i, song in enumerate(songs)
-    ])
+    song_entries = []
+    for idx, song in enumerate(songs, start=1):
+        track = song.get("track", {})
+        title = track.get("name", "Unknown Title")
+        artists = track.get("artists") or []
+        artist_names = ", ".join(artist.get("name", "Unknown Artist") for artist in artists)
+        song_entries.append(f'{idx}. "{title}" by {artist_names}')
+    song_string = "\n".join(song_entries) if song_entries else "The playlist is empty."
 
-
-    # full prompt with song list to send to ai
-    # V1 is to analysi genre confidence for the entire playlist and for each individual song
     if version == "V1":
         full_prompt = PROMPTS[version].replace("{PROMPT}", song_string)
-    # V2 is to analyze the theme confidence for each individual song in the secondary playlist
     elif version == "V2":
-        full_prompt = PROMPTS[version].replace("{THEME}", shared.main_playlist['analysis']['theme']).replace("{PROMPT}", song_string)
+        theme = shared.main_playlist['analysis']['theme'] if shared.main_playlist else "unknown theme"
+        full_prompt = PROMPTS[version].replace("{THEME}", theme).replace("{PROMPT}", song_string)
+    else:
+        raise ValueError(f"Unsupported prompt version: {version}")
 
     payload = {
-        "model": "llama3-70b-8192",  # Or llama3, etc.
+        "model": GROQ_MODEL,
         "messages": [
-            {"role": "user", "content": full_prompt},
-            {"role": "system", "content": "You are a helpful assistant. Return your response strictly as valid JSON only. Do not include any explanations or prose."}
+            {"role": "system", "content": "You are a helpful assistant. Return your response strictly as valid JSON only. Do not include any explanations or prose."},
+            {"role": "user", "content": full_prompt}
         ],
-        # temperature handles consistency and randomness, lower temp is consistent and less random - precise
-        # higher temp is less consistent and more random - good for creative wriitng or brainstorming
         "temperature": 0.1
     }
 
-    
-
-
     response = requests.post(url, json=payload, headers=headers)
-    response.raise_for_status()
-    #print("RESPONSE: ")
-    #print(response)
+    if response.status_code >= 400:
+        print("Groq API error:", response.status_code)
+        try:
+            error_payload = response.json()
+            print(error_payload)
+            if (
+                isinstance(error_payload, dict)
+                and error_payload.get("error", {}).get("code") == "model_decommissioned"
+            ):
+                raise RuntimeError(
+                    f"Groq model '{GROQ_MODEL}' is deprecated. "
+                    "Set GROQ_MODEL to a currently supported model."
+                )
+        except ValueError:
+            print(response.text)
+        response.raise_for_status()
 
     try:
         response_data = response.json()
-        model_output = response_data["choices"][0]["message"]["content"]
+        message_content = response_data["choices"][0]["message"]["content"]
+        if isinstance(message_content, list):
+            text_chunks = [
+                chunk.get("text", "")
+                for chunk in message_content
+                if isinstance(chunk, dict) and chunk.get("type") == "text"
+            ]
+            model_output = "".join(text_chunks).strip()
+        else:
+            model_output = str(message_content).strip()
+
+        if not model_output:
+            raise ValueError("Groq response contained no text.")
 
         print("MODEL OUTPUT:\n", model_output)
+        if model_output.startswith("```"):
+            model_output = model_output.strip().strip("`")
+            if model_output.lower().startswith("json"):
+                model_output = model_output[4:].lstrip()
         parsed_json = orjson.loads(model_output)
         print("PARSED JSON:\n", parsed_json)
         return parsed_json
-    except (KeyError, json.JSONDecodeError) as e:
+    except Exception as e:
         print("Error parsing model output:", e)
         print("Raw response:", response.text)
         return None
