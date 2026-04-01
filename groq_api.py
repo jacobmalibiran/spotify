@@ -1,10 +1,8 @@
 import requests
 from dotenv import load_dotenv
 import os
-import json
 from prompts import PROMPTS
 import shared
-import re
 import orjson
 
 load_dotenv()
@@ -16,7 +14,6 @@ if not API_KEY:
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 def analyze_songs(songs, version):
-    import api  # noqa: F401  # ensure Flask app is loaded before making external call
 
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {

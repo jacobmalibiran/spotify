@@ -112,7 +112,7 @@ def genre_similarity_to_playlist(song_genre_confidence, playlist_genre_confidenc
     return float(cosine_similarity(song_vec, playlist_vec)[0][0])
 
 def add_songs_to_playlist(token, playlist_id, selected_songs):
-    url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+    url = f"https://api.spotify.com/v1/playlists/{playlist_id}/items"
 
     headers= {
         "Authorization": f"Bearer {token}",
