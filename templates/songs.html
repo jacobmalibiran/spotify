@@ -40,7 +40,7 @@
                 <!-- only .theme because it is getting the value from theme-->
                 <span class="genre-name">{{ analysis.theme }}</span>
 
-                <h2>Genre Breakdown</h2>
+                <h2>Playlist Genre Breakdown</h2>
                 <!-- .items because the dict at genre_confidence has a value that contains a dict-->
                 {% for genre, score in analysis.genre_confidence.items() %}
                 <div class="genre-item">
@@ -60,11 +60,25 @@
                 <h2>Tracks</h2>
                 <ul>
                 {% for song in songs %}
-                    <div>
+                    {% set key = song.track.name | trim | lower %}
+                    {% set genres = song_genres.get(key, {}) %}
+                    <div class="song-item">
                         {{ loop.index }}. {{ song.track.name }} -
                         {% for artist in song.track.artists %}
                             {{ artist.name }}{% if not loop.last %}, {% endif %}
                         {% endfor %}
+                        {% if genres %}
+                        <div class="genre-tooltip">
+                            {% for genre, score in genres.items() %}
+                                {% if score > 0.05 %}
+                                <div class="tooltip-row">
+                                    <span class="tooltip-genre-name">{{ genre }}</span>
+                                    <span class="tooltip-genre-score">{{ (score * 100) | round(0) | int }}%</span>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
                 </ul>
